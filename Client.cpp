@@ -9,7 +9,7 @@ Client::Client(std::string name, IP server_IP, IP router_IP, int router_port): s
     router_port_ = router_port;
 }
 
-void Client::setIp(IP ip){
+void Client::setIP(IP ip){
     self_IP_ = ip;
 }
 

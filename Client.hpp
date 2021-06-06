@@ -16,7 +16,7 @@
 class Client{
     public:
     Client(std::string name, IP server_IP, IP router_IP, int router_port);
-    void setIp(IP ip);
+    void setIP(IP ip);
     void join(std::string group_name);
     void leave(std::string group_name);
     void select(std::string group_name);
