@@ -94,6 +94,31 @@ void routerProcess(Router this_router) {
     }
 }
 
+void clientProcess(Client this_client) {
+    int read_fd = this_client.getCommandFd();
+
+    int flags = fcntl(read_fd, F_GETFL, 0);
+    fcntl(read_fd, F_SETFL, flags | O_NONBLOCK);
+
+    size_t message_size = 100;
+    char message[message_size];
+
+    while (true) {
+        int read_bytes = read(read_fd, message, message_size);
+        if (read_bytes <= 0) {
+            continue;
+        }
+
+        cout << "Client " << this_client.getName() << ": Read " << read_bytes << " bytes. The message is: " << message << endl;
+        vector<string> splitted_command = splitCommand(message);
+        string command_keyword = splitted_command[0];
+        //TODO: complete!
+        if (command_keyword == "send_shit!") {
+            
+        }
+    }
+}
+
 int Network::router(vector<string> &splitted_command) {
     int fds[2];
     if (pipe(fds) < 0) {
