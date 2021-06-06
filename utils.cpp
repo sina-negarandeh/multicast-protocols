@@ -16,6 +16,16 @@ vector<string> splitCommand(string command, char delim) {
     return duppedline;
 }
 
+string readFileIntoString(const string& path) {
+    ifstream input_file(path);
+    if (!input_file.is_open()) {
+        cerr << "Could not open the file - '"
+             << path << "'" << endl;
+        exit(EXIT_FAILURE);
+    }
+    return string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
+}
+
 IP::IP(std::string ip_string){
     vector<string> duppedline =  splitCommand(ip_string, '.');
     if (duppedline.size() != 4){throw "Invalid IP format!";}

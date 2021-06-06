@@ -9,11 +9,13 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 #define READ 0
 #define WRITE 1
 
 std::vector<std::string> splitCommand(std::string command, char delim=' ');
+std::string readFileIntoString(const std::string& path);
 
 class IP{
     public:
