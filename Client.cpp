@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include "utils.hpp"
+#include "Packet.hpp"
 
 using namespace std;
 
@@ -12,23 +13,21 @@ void Client::setIp(IP ip){
     self_IP_ = ip;
 }
 
-//TODO: we need a packet class!
 void Client::sendFile(std::string file_name, std::string server_name){
     string message = readFileIntoString(file_name);
     //TODO: turn message into packet! maybe differant header for files!
-    string packet_string = message;
-    //TODO: this is wrong!
+    vector<string> packet_strings = Packet(self_IP_.get_string(),  message, server_name).getPacketString();
+    //TODO: this is wrong! change this!
     string link_string = "link_" + server_name + "_" + name_;
-    send(message, link_string);
+    send(packet_strings[0], link_string);
 }
 
-//TODO: we need a packet class!
 void Client::sendMessage(std::string message, std::string server_name){
     //TODO: turn message into packet!
-    string packet_string = message;
-    //TODO: this is wrong!
+    vector<string> packet_strings = Packet(self_IP_.get_string(),  message, server_name).getPacketString(); //??????
+    //TODO: this is wrong! change this!
     string link_string = "link_" + server_name + "_" + name_;
-    send(message, link_string);
+    send(packet_strings[0], link_string);
 }
 
 int Client::send(std::string message, std::string link){
@@ -45,28 +44,3 @@ int Client::send(std::string message, std::string link){
     close(fd);
     return 0;
 }
-
-
-// char data_buffer[MESSAGE_BUFFER_SIZE] = {0};
-// int sendData(string file_name) {
-//     FILE* file_ptr = fopen(file_name.c_str(), "r");
-//     if (file_ptr == NULL) {
-//         ExitWithError("File open failed!\n");
-//     }
-// 	int size = 0;
-//     while (1) {
-//         if (sendFile(file_ptr) == 1) {
-//             send(client_data_socket_fd, data_buffer, strlen(data_buffer), 0);
-// 			size += strlen(data_buffer);
-//             break;
-//         } else {
-//             // send
-//             send(client_data_socket_fd, data_buffer, strlen(data_buffer), 0);
-// 			size += strlen(data_buffer);
-//             bzero(data_buffer, MESSAGE_BUFFER_SIZE);
-//         }
-//     }
-
-//     fclose(file_ptr);
-// 	return size;
-// }
