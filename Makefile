@@ -2,7 +2,7 @@ CC := g++ -std=c++17
 
 all : network
 
-network : main.o network.o router.o utils.o 
+network : main.o network.o router.o utils.o Packet.o Client.o
 		$(CC) main.o network.o router.o utils.o Packet.o Client.o -o network
 
 main.o : main.cpp network.hpp router.hpp utils.hpp
