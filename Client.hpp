@@ -21,13 +21,13 @@ class Client{
     void leave(std::string group_name);
     void select(std::string group_name);
     void sendFile(std::string file_name, std::string server_name);
-    void sendMessage(std::string file_name, std::string server_name);
+    void sendMessage(std::string message, std::string server_name);
     void showGroup();
     void Sync();
     void SignOut();
 
-    void send(std::string message);
-    void recieve();
+    int send(std::string message, std::string link);
+    int recieve();
 
     private:
     std::string name_;
@@ -35,6 +35,7 @@ class Client{
     IP router_IP_;
     int router_port_;
     IP self_IP_;
+    std::vector<std::string> joined_groups;
 };
 
 
