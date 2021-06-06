@@ -16,7 +16,7 @@ vector<string> splitCommand(string command, char delim) {
     return duppedline;
 }
 
-Ip::Ip(std::string ip_string){
+IP::IP(std::string ip_string){
     vector<string> duppedline =  splitCommand(ip_string, '.');
     if (duppedline.size() != 4){throw "Invalid IP format!";}
     ip_string_ = ip_string;
@@ -28,7 +28,7 @@ Ip::Ip(std::string ip_string){
     }
 }
 
-Ip::Ip(std::vector<int> ip_ints){
+IP::IP(std::vector<int> ip_ints){
     if (ip_ints.size() != 4){throw "Invalid IP format!";}
     ip_ints_ = ip_ints;
     string ip_string = to_string(ip_ints[0]);
@@ -38,7 +38,7 @@ Ip::Ip(std::vector<int> ip_ints){
     ip_string_ = ip_string;
 }
 
-Ip::Ip(int part1, int part2, int part3, int part4){
+IP::IP(int part1, int part2, int part3, int part4){
     vector<int> ip_ints;
     ip_ints.push_back(part1);
     ip_ints.push_back(part2);

@@ -15,11 +15,11 @@
 
 std::vector<std::string> splitCommand(std::string command, char delim=' ');
 
-class Ip{
+class IP{
     public:
-    Ip(std::string ip_string);
-    Ip(std::vector<int> ip_ints);
-    Ip(int part1, int part2, int part3, int part4);
+    IP(std::string ip_string);
+    IP(std::vector<int> ip_ints);
+    IP(int part1, int part2, int part3, int part4);
     std::string get_string(){return ip_string_;}    
     std::vector<int> get_parts(){return ip_ints_;}
 

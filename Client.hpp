@@ -15,8 +15,8 @@
 
 class Client{
     public:
-    Client(std::string name, Ip server_IP, Ip router_IP, int router_port);
-    void setIp(Ip ip);
+    Client(std::string name, IP server_IP, IP router_IP, int router_port);
+    void setIp(IP ip);
     void join(std::string group_name);
     void leave(std::string group_name);
     void select(std::string group_name);
@@ -26,12 +26,15 @@ class Client{
     void Sync();
     void SignOut();
 
+    void send(std::string message);
+    void recieve();
+
     private:
     std::string name_;
-    Ip server_IP_;
-    Ip router_IP_;
+    IP server_IP_;
+    IP router_IP_;
     int router_port_;
-    Ip self_IP_;
+    IP self_IP_;
 };
 
 
