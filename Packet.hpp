@@ -22,15 +22,15 @@ packet is a 128 character string
 class Packet{
     public:
     Packet(std::string packet_string);
-    Packet(int sender_system_id, int reciever_system_id, std::string message);
-    int getSenderId(){return sender_id_;}
-    int getRecieverId_(){return reciever_id_;}
+    Packet(std::string sender_address, std::string reciever_address, std::string message);
+    std::string getSenderAddress(){return sender_address_;}
+    std::string getRecieverAddress(){return reciever_address_;}
     std::string getMessage(){return message_;}
     std::vector<std::string> getPacketString(){return packet_strings_;}
 
     private:
-    int sender_id_;
-    int reciever_id_;
+    std::string sender_address_;
+    std::string reciever_address_;
     std::string message_;
     void makePacketString();
     void extractDataFromPacket();
