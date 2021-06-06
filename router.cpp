@@ -17,7 +17,8 @@ int Router::getCommandFd() {
 }
 
 int Router::shutdown() {
-    
+    //TODO: complete
+    return 0;
 }
 
 int Router::writeMessage(string link, string message, int router_id) {
