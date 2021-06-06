@@ -15,7 +15,7 @@
 
 class Client{
     public:
-    Client(std::string name, IP server_IP, IP router_IP, int router_port);
+    Client(std::string name, IP server_IP, IP router_IP, int router_port, int command_fd);
     void setIP(IP ip);
     void join(std::string group_name);
     void leave(std::string group_name);
@@ -26,6 +26,10 @@ class Client{
     void Sync();
     void SignOut();
 
+    void setCommandFd(int command_fd){ command_fd_ = command_fd; }
+    int getCommandFd(){ return command_fd_; }
+    std::string getName(){ return name_; }
+
     int send(std::string message, std::string link);
     int recieve();
 
@@ -35,6 +39,7 @@ class Client{
     IP router_IP_;
     int router_port_;
     IP self_IP_;
+    int command_fd_;
     std::vector<std::string> joined_groups;
 };
 
