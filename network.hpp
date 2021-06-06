@@ -10,7 +10,12 @@
 
 #include "router.hpp"
 #include "utils.hpp"
+#include "Client.hpp"
+#include "Packet.hpp"
 
+
+void routerProcess(Router this_router);
+void clientProcess(Client this_client);
 
 class Network {
     public:
