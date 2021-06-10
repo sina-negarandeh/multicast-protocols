@@ -4,15 +4,20 @@
 
 using namespace std;
 
-Client::Client(std::string name, IP server_IP, IP router_IP, int router_port, int command_fd): 
+Client::Client(std::string name, int id, IP server_IP, IP router_IP, int router_port, int command_fd): 
                                     server_IP_(server_IP), router_IP_(router_IP), self_IP_(0,0,0,0){
     name_ = name;
     router_port_ = router_port;
     command_fd_ = command_fd;
+    id_ = id;
 }
 
 void Client::setIP(IP ip){
     self_IP_ = ip;
+}
+
+int Client::getID() {
+    return this->id_;
 }
 
 void Client::sendFile(std::string file_name, std::string server_name){

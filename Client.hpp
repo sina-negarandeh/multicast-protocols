@@ -15,8 +15,9 @@
 
 class Client{
     public:
-    Client(std::string name, IP server_IP, IP router_IP, int router_port, int command_fd);
+    Client(std::string name, int id, IP server_IP, IP router_IP, int router_port, int command_fd);
     void setIP(IP ip);
+    int getID();
     void join(std::string group_name);
     void leave(std::string group_name);
     void select(std::string group_name);
@@ -35,6 +36,7 @@ class Client{
 
     private:
     std::string name_;
+    int id_;
     IP server_IP_;
     IP router_IP_;
     int router_port_;
@@ -42,6 +44,5 @@ class Client{
     int command_fd_;
     std::vector<std::string> joined_groups;
 };
-
 
 #endif
