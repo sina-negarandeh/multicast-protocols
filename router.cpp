@@ -2,10 +2,12 @@
 
 using namespace std;
 
-Router::Router(int number_of_ports, int id, int command_fd) {
+Router::Router(string router_IP_address, int number_of_ports, int id, int command_fd) {
+//Router::Router(int number_of_ports, int id, int command_fd) {
     this->number_of_ports_ = number_of_ports;
     this->id_ = id;
     this->command_fd_ = command_fd;
+    this->router_IP_address_ = router_IP_address;
 }
 
 int Router::getID() {
@@ -14,6 +16,10 @@ int Router::getID() {
 
 int Router::getCommandFd() {
     return this->command_fd_;
+}
+
+string Router::getIP() {
+    return this->router_IP_address_;
 }
 
 int Router::shutdown() {
@@ -102,4 +108,32 @@ int Router::acceptConnect(int router_id, int port_number) {
     // TODO: add to connected list
 
     return 1;
+}
+
+bool Router::hasInLookupTable(DeviceInfo device_info) {
+    for (int i = 0; i < this->lookup_table_.size(); i++) {
+        if (lookup_table_[i].id_ == device_info.id_ && lookup_table_[i].type == device_info.type)
+            return true;
+    }
+    
+    return false;
+}
+
+int Router::updateLookupTable(DeviceInfo device_info) {
+    if (this->hasInLookupTable(device_info)) {
+        return 0;
+    }
+    this->lookup_table_.push_back(device_info);
+}
+
+void Router::printLookupTable() {
+    cout << "Router " << this->id_ << " Lookup Table" << endl;
+    for (int i = 0; i < this->lookup_table_.size(); i++) {
+        cout << "---------------------" << endl;
+        if (lookup_table_[i].type == ROUTER)
+            cout << "Router " << lookup_table_[i].id_ << " Port: " << lookup_table_[i].id_ << " IP: " << lookup_table_[i].IP_address_ << endl;
+        else
+            cout << "Client IP: " << lookup_table_[i].IP_address_ << endl;
+    }
+    cout << "---------------------" << endl;
 }

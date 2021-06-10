@@ -9,23 +9,33 @@
 #include <string>
 #include <iostream>
 
+#include "utils.hpp"
+
 #define DEFAULT_PORTS_NUMBER 10
 
 class Router {
     public:
-    Router(int number_of_ports, int id, int command_fd);
+    Router(std::string router_IP_address, int number_of_ports, int id, int command_fd);
+    //Router(int number_of_ports, int id, int command_fd);
     int getID();
     int getCommandFd();
+    std::string getIP();
     int shutdown();
     int requestConnect(int router_id, int port_number);
     int acceptConnect(int router_id, int port_number);
     int writeMessage(std::string link, std::string message, int router_id);
     int readMessage(std::string link, char* message, size_t message_size, int router_id);
+    bool hasInLookupTable(DeviceInfo device_info);
+    int updateLookupTable(DeviceInfo device_info);
+    void printLookupTable();
+    
 
     private:
+    std::string router_IP_address_;
     size_t number_of_ports_;
     int id_;
     int command_fd_;
+    std::vector<DeviceInfo> lookup_table_;
 };
 
 
