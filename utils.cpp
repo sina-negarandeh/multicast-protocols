@@ -8,7 +8,7 @@ vector<string> splitCommand(string command, char delim) {
     istringstream stream(command);
     while (stream) {
         string word;
-        getline(stream, word, '.');
+        getline(stream, word, delim);
         duppedline.push_back(word);
     }
     if (duppedline[duppedline.size() - 1] == "")
@@ -32,9 +32,6 @@ IP::IP(std::string ip_string){
     ip_string_ = ip_string;
     for (string part:duppedline){
         ip_ints_.push_back(stoi(part));
-    }
-    for (int x : ip_ints_){
-        cout<<x<<endl;
     }
 }
 
