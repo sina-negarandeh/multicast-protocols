@@ -25,15 +25,26 @@ class Network {
     int handleCommand(std::string input);
     int run();
 
+    int client(std::vector<std::string> &splitted_command);
+    int findClient(int client_id);
+    int connectClient(DeviceInfo device_info, std::string router_IP);
+
     int router(std::vector<std::string> &splitted_command);
     int findRouter(int router_id);
     int createNamePipe(std::string link);
     int connectRouter(std::vector<std::string> &splitted_command);
     int send(std::string cmd);
 
+    int updateLookupTable(int router_index, DeviceInfo device_info);
+    void printLookupTable();
+
     private:
+    std::vector<Client> clients_;
     std::vector<Router> routers_;
     std::vector<int> router_command_fd_;
+    std::vector<int> client_command_fd_;
+    std::vector<std::vector<int> > connected_routers_;
+    std::vector<std::vector<int> > client_connected_routers_;
 
 };
 
