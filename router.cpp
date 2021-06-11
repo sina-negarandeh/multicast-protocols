@@ -174,36 +174,35 @@ void Router::receive() {
     fd_set readfds;
     FD_ZERO(&readfds);
 
-    for (;;) {
+    std::string link_w = "w_" + link_;
+    
+    // cout << "Switch " << switch_number_ << ": " << link << endl;
+    
+    size_t message_size = 129;
+    char message[message_size];
 
-        std::string link_w = "w_" + link_;
+    // cout << "Switch " << switch_number_ << ": Trying to open link to read." << endl;
+    int fd = open(link_w.c_str(), O_RDONLY|O_NONBLOCK);
+
+    FD_SET(fd, &readfds);
+
+    if (FD_ISSET(fd, &readfds)) {
         
-        // cout << "Switch " << switch_number_ << ": " << link << endl;
-        
-        size_t message_size = 129;
-        char message[message_size];
-
-        // cout << "Switch " << switch_number_ << ": Trying to open link to read." << endl;
-        int fd = open(link_w.c_str(), O_RDONLY|O_NONBLOCK);
-
-        FD_SET(fd, &readfds);
-
-        if (FD_ISSET(fd, &readfds)) {
+        int read_bytes = read(fd, message, message_size);
+        if (read_bytes > 0) {
+            cout << "Router " << id_ << ": Message from Client " << ": " << message << endl;
             
-            int read_bytes = read(fd, message, message_size);
-            if (read_bytes > 0) {
-                cout << "Router " << id_ << ": Message from Client " << ": " << message << endl;
 
-                //this->send();
+            //TODO: Forward here
+            //this->send();
 
-                memset(message, 0, message_size);
-                close(fd);
-            }
-
-            
-        } else {
+            memset(message, 0, message_size);
             close(fd);
         }
+
+        
+    } else {
+        close(fd);
     }
 
     for (int router_index = 0; router_index < this->connected_routers_.size(); router_index++) {
