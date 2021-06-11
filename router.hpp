@@ -28,6 +28,8 @@ class Router {
     bool hasInLookupTable(DeviceInfo device_info);
     int updateLookupTable(DeviceInfo device_info);
     void printLookupTable();
+    std::vector<DeviceInfo> getLookupTable();
+    int updateLookupTable(std::vector<DeviceInfo> lookup_table, std::string IP);
     
 
     private:

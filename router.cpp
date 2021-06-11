@@ -137,3 +137,15 @@ void Router::printLookupTable() {
     }
     cout << "---------------------" << endl;
 }
+
+std::vector<DeviceInfo> Router::getLookupTable() {
+    return lookup_table_;
+}
+
+int Router::updateLookupTable(std::vector<DeviceInfo> lookup_table, string IP) {
+    for (int i = 0; i < lookup_table.size(); i++) {
+        lookup_table[i].IP_address_ = IP;
+        this->updateLookupTable(lookup_table[i]);
+    }
+    return 0;
+}
