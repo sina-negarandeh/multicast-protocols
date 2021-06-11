@@ -29,13 +29,17 @@ int Router::shutdown() {
 
 int Router::writeMessage(string link, string message, int router_id) {
     int fd = open(link.c_str(), O_WRONLY);
-  
-    int write_bytes = write(fd, message.c_str(), strlen(message.c_str()) + 1);
-    if (write_bytes < 1) {
-        cout << "Router " << id_ << ": Couldn't write a message to Router " << router_id << ": " << message << endl;
-    } else {
-        close(fd);
-        return 1;
+
+    vector<string> packet_strings = Packet(this->getIP(), to_string(router_id), message).getPacketString();
+
+    for (int i = 0; i < packet_strings.size(); i++) {
+        int write_bytes = write(fd, packet_strings[i].c_str(), strlen(packet_strings[i].c_str()) + 1);
+        if (write_bytes < 1) {
+            cout << "Router " << id_ << ": Couldn't write a message to Router " << router_id << ": " << packet_strings[i] << endl;
+        } else {
+            close(fd);
+            return 1;
+        }
     }
 
     close(fd);

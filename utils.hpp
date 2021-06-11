@@ -11,6 +11,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "Packet.hpp"
+
 #define READ 0
 #define WRITE 1
 
