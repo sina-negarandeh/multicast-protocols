@@ -80,6 +80,11 @@ int Router::requestConnect(int router_id, int port_number) {
     }
     
     cout << "Router " << id_ << ": Connect Complete" << endl;
+    DeviceInfo router;
+    router.id_ = router_id;
+    router.port_number_ = port_number;
+    connected_routers_.push_back(router);
+
     // TODO: add to connected list
 
     return 0;
@@ -89,8 +94,10 @@ int Router::acceptConnect(int router_id, int port_number, int device_type) {
     string link = "";
     if (device_type == ROUTER)
         link = "link_r_r_" + to_string(min(id_, router_id)) + "_" + to_string(max(id_, router_id));
-    else if (device_type == SYSTEM)
+    else if (device_type == SYSTEM) {
         link = "link_c_r_" + to_string(min(id_, router_id)) + "_" + to_string(max(id_, router_id));
+        link_ = to_string(min(id_, router_id)) + "_" + to_string(max(id_, router_id));
+    }
 
     std::string link_r = "r_" + link;
     std::string link_w = "w_" + link;
@@ -110,6 +117,12 @@ int Router::acceptConnect(int router_id, int port_number, int device_type) {
     }
     
     cout << "Router " << id_ << ": Connect Complete" << endl;
+    if (device_type == ROUTER) {
+        DeviceInfo router;
+        router.id_ = router_id;
+        router.port_number_ = port_number;
+        connected_routers_.push_back(router);
+    }
     // TODO: add to connected list
 
     return 1;
@@ -155,4 +168,69 @@ int Router::updateLookupTable(std::vector<DeviceInfo> lookup_table, string IP) {
         this->updateLookupTable(lookup_table[i]);
     }
     return 0;
+}
+
+void Router::receive() {
+    fd_set readfds;
+    FD_ZERO(&readfds);
+
+    for (;;) {
+
+        std::string link_w = "w_" + link_;
+        
+        // cout << "Switch " << switch_number_ << ": " << link << endl;
+        
+        size_t message_size = 129;
+        char message[message_size];
+
+        // cout << "Switch " << switch_number_ << ": Trying to open link to read." << endl;
+        int fd = open(link_w.c_str(), O_RDONLY|O_NONBLOCK);
+
+        FD_SET(fd, &readfds);
+
+        if (FD_ISSET(fd, &readfds)) {
+            
+            int read_bytes = read(fd, message, message_size);
+            if (read_bytes > 0) {
+                cout << "Router " << id_ << ": Message from Client " << ": " << message << endl;
+
+                //this->send();
+
+                memset(message, 0, message_size);
+                close(fd);
+            }
+
+            
+        } else {
+            close(fd);
+        }
+    }
+
+    for (int router_index = 0; router_index < this->connected_routers_.size(); router_index++) {
+        int router_id = this->connected_routers_[router_index].id_;
+
+        string link = "link_r_r_" + to_string(min(id_, router_id)) + "_" + to_string(max(id_, router_id));
+
+        std::string link_w = "w_" + link;
+        
+        size_t message_size = 129;
+        char message[message_size];
+
+        int fd = open(link_w.c_str(), O_RDONLY|O_NONBLOCK);
+
+        FD_SET(fd, &readfds);
+
+        if (FD_ISSET(fd, &readfds)) {
+            
+            int read_bytes = read(fd, message, message_size);
+            if (read_bytes > 0) {
+                cout << "Router " << id_ << ": Message from System " << router_id << ": " << message << endl;
+
+                memset(message, 0, message_size);
+                close(fd);
+            }
+        } else {
+            close(fd);
+        }
+    }
 }

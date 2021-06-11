@@ -30,6 +30,7 @@ class Router {
     void printLookupTable();
     std::vector<DeviceInfo> getLookupTable();
     int updateLookupTable(std::vector<DeviceInfo> lookup_table, std::string IP);
+    void receive();
     
 
     private:
@@ -38,6 +39,8 @@ class Router {
     int id_;
     int command_fd_;
     std::vector<DeviceInfo> lookup_table_;
+    std::string link_;
+    std::vector<DeviceInfo> connected_routers_;
 };
 
 
