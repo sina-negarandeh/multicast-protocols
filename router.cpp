@@ -30,16 +30,12 @@ int Router::shutdown() {
 int Router::writeMessage(string link, string message, int router_id) {
     int fd = open(link.c_str(), O_WRONLY);
 
-    vector<string> packet_strings = Packet(this->getIP(), to_string(router_id), message).getPacketString();
-
-    for (int i = 0; i < packet_strings.size(); i++) {
-        int write_bytes = write(fd, packet_strings[i].c_str(), strlen(packet_strings[i].c_str()) + 1);
-        if (write_bytes < 1) {
-            cout << "Router " << id_ << ": Couldn't write a message to Router " << router_id << ": " << packet_strings[i] << endl;
-        } else {
-            close(fd);
-            return 1;
-        }
+    int write_bytes = write(fd, message.c_str(), strlen(message.c_str()) + 1);
+    if (write_bytes < 1) {
+        cout << "Router " << id_ << ": Couldn't write a message to Router " << router_id << ": " << message << endl;
+    } else {
+        close(fd);
+        return 1;
     }
 
     close(fd);
@@ -51,8 +47,8 @@ int Router::readMessage(string link, char* message, size_t message_size, int rou
 
     int read_bytes = read(fd, message, message_size);
     if (read_bytes > 1) {
-        string message_ =  Packet(message).getMessage();
-        cout << "Router " << id_ << ": Message from Router " << router_id << ": " << message_ << endl;
+        //string message_ =  Packet(message).getMessage();
+        cout << "Router " << id_ << ": Message from Router " << router_id << ": " << message << endl;
         memset(message, 0, message_size);
         close(fd);
         return 1;
@@ -71,7 +67,7 @@ int Router::requestConnect(int router_id, int port_number) {
     
     string send_message = "Hello from Router " + to_string(id_) + ".";
     
-    size_t message_size = 128;
+    size_t message_size = 257;
     char message[message_size];
 
     int read_flag, write_flag = 0;
@@ -89,15 +85,19 @@ int Router::requestConnect(int router_id, int port_number) {
     return 0;
 }
 
-int Router::acceptConnect(int router_id, int port_number) {
-    string link = "link_r_r_" + to_string(min(id_, router_id)) + "_" + to_string(max(id_, router_id));
+int Router::acceptConnect(int router_id, int port_number, int device_type) {
+    string link = "";
+    if (device_type == ROUTER)
+        link = "link_r_r_" + to_string(min(id_, router_id)) + "_" + to_string(max(id_, router_id));
+    else if (device_type == SYSTEM)
+        link = "link_c_r_" + to_string(min(id_, router_id)) + "_" + to_string(max(id_, router_id));
 
     std::string link_r = "r_" + link;
     std::string link_w = "w_" + link;
     
     std::string send_message = "Hello from Router " + to_string(id_) + ".";
     
-    size_t message_size = 128;
+    size_t message_size = 257;
     char message[message_size];
 
     int read_flag, write_flag = 0;

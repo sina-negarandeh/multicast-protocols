@@ -22,7 +22,7 @@ class Router {
     std::string getIP();
     int shutdown();
     int requestConnect(int router_id, int port_number);
-    int acceptConnect(int router_id, int port_number);
+    int acceptConnect(int router_id, int port_number, int device_type);
     int writeMessage(std::string link, std::string message, int router_id);
     int readMessage(std::string link, char* message, size_t message_size, int router_id);
     bool hasInLookupTable(DeviceInfo device_info);
