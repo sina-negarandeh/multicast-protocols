@@ -34,3 +34,4 @@
 # Apple Desktop Services Store
 .DS_Store
 network
+.vscode/settings.json
