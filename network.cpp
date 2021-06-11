@@ -147,6 +147,8 @@ void clientProcess(Client this_client) {
     while (true) {
         int read_bytes = read(read_fd, message, message_size);
         if (read_bytes <= 0) {
+            sleep(8);
+            this_client.receive();
             continue;
         }
 
@@ -165,7 +167,7 @@ void clientProcess(Client this_client) {
                 message += splitted_command[i];
             }
             this_client.send(message);
-        } 
+        }
     }
 }
 
@@ -335,6 +337,8 @@ void routerProcess(Router this_router) {
     while (true) {
         int read_bytes = read(read_fd, message, message_size);
         if (read_bytes <= 0) {
+            sleep(8);
+            this_router.receive();
             continue;
         }
 
