@@ -36,7 +36,7 @@ class Client{
     int getCommandFd(){ return command_fd_; }
     std::string getName(){ return name_; }
 
-    int send(std::string message, std::string link);
+    int send(std::string message);
     int recieve();
 
     private:
@@ -48,6 +48,7 @@ class Client{
     IP self_IP_;
     int command_fd_;
     std::vector<std::string> joined_groups;
+    std::string link_;
 };
 
 #endif

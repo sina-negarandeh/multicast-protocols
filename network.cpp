@@ -48,8 +48,6 @@ int Network::handleCommand(string command) {
         } else if (isCommandCorrect("RouterConnect", 5, command_keyword, splitted_command.size())) {
             this->connectRouter(splitted_command);
             return 0;
-        } else if (isCommandCorrect("ChangeLinkCost", 3, command_keyword, splitted_command.size())) {
-
         } else if (isCommandCorrect("DisconnectLink", 2, command_keyword, splitted_command.size())) {
 
         } else if (isCommandCorrect("RouterShow", 2, command_keyword, splitted_command.size())) {
@@ -63,6 +61,19 @@ int Network::handleCommand(string command) {
         } else if (isCommandCorrect("Server", 4, command_keyword, splitted_command.size())) {
             this->server(splitted_command);
             return 0;
+        } else if (isCommandCorrect("GetGroupList", 1, command_keyword, splitted_command.size())) {
+            this->getGroupList(splitted_command);
+            return 0;
+        } else if (isCommandCorrect("Group", 2, command_keyword, splitted_command.size())) {
+            this->group(splitted_command);
+            return 0;
+        } else if (isCommandCorrect("JoinGroup", 3, command_keyword, splitted_command.size())) {
+            this->joinGroup(splitted_command);
+            return 0;
+        } else if ("Send" ==  command_keyword) {
+            // client_id group message
+            this->sendClient(splitted_command);
+            return 0;
         } else {
             return 1;
         }
@@ -71,6 +82,57 @@ int Network::handleCommand(string command) {
     }
 
     return 0;
+}
+
+std::string Network::makeMessage(std::vector<std::string> &splitted_command){
+    string message = "";
+    for (int i = 3 ; i < splitted_command.size() ; i ++) {
+        message += splitted_command[i];
+    }
+    return message;
+}
+
+void Network::sendClient(std::vector<std::string> &splitted_command){
+    string message = makeMessage(splitted_command);
+    int group_id = findGroup(splitted_command[2]);
+    vector<int> group_members = groups_[group_id];
+    int client_id = stoi(splitted_command[1]); 
+    int client_index = findClient(client_id);
+    for (int member : group_members){
+        string client_message = "send " + to_string(member)  + message;
+        int client_write_fd = this->client_command_fd_[findClient(client_id)];
+        if (write(client_command_fd_[client_index], message.c_str(), strlen(message.c_str()) + 1) < 0) {
+            cout << "Network: Failed to write to system " << routers_[routers_.size() - 1].getID() << " command file descriptor." << endl;
+        }
+    }
+}
+
+int Network::findGroup(std::string group_ip){
+    for (int i = 0 ; i < group_ips_.size() ; i++) {
+        if (group_ips_[i] == group_ip) return i;
+    }
+    return -1;
+}
+
+void Network::joinGroup(std::vector<std::string> &splitted_command){
+    int client_index = findClient(stoi(splitted_command[1]));
+    int gorup_index = findGroup(splitted_command[2]);
+    groups_[gorup_index].push_back(stoi(splitted_command[1]));
+    cout<<"Client " << stoi(splitted_command[1]) << " joined group with ip: " << splitted_command[2]<<endl;
+}
+
+
+void Network::getGroupList(std::vector<std::string> &splitted_command) {
+    cout<<"*******List of groups*******"<<endl;
+    for (int i = 0 ; i < splitted_command.size() ; i++) {
+        cout<<"Group " << i << "      Ip: " << group_ips_[i]<<endl;
+    }
+}
+
+void Network::group(std::vector<std::string> &splitted_command) {
+    group_ips_.push_back(splitted_command[1]);
+    groups_.push_back(vector<int>());
+    cout<<"Group " << groups_.size() - 1 << " was created with ip: " << splitted_command[1]<<endl;
 }
 
 void clientProcess(Client this_client) {
@@ -96,7 +158,14 @@ void clientProcess(Client this_client) {
             int router_number = stoi(splitted_command[1]);
             int port_number = stoi(splitted_command[2]);
             this_client.requestConnect(router_number, port_number);
-        }
+        } else if (command_keyword == "send"){
+            int reciever_id = stoi(splitted_command[1]);
+            string message = "";
+            for (int i = 2 ; i < splitted_command.size() ; i ++) {
+                message += splitted_command[i];
+            }
+            this_client.send(message);
+        } 
     }
 }
 

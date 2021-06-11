@@ -30,6 +30,8 @@ class Network {
     int client(std::vector<std::string> &splitted_command);
     int findClient(int client_id);
     int connectClient(DeviceInfo device_info, std::string router_IP);
+    void sendClient(std::vector<std::string> &splitted_command);
+    std::string makeMessage(std::vector<std::string> &splitted_command);
 
     int server(std::vector<std::string> &splitted_command);
     int getMainServer();
@@ -41,6 +43,11 @@ class Network {
     int createNamePipe(std::string link);
     int connectRouter(std::vector<std::string> &splitted_command);
     int send(std::string cmd);
+
+    void getGroupList(std::vector<std::string> &splitted_command);
+    void group(std::vector<std::string> &splitted_command);
+    void joinGroup(std::vector<std::string> &splitted_command);
+    int findGroup(std::string group_ip);
 
     int updateLookupTable(int router_index, DeviceInfo device_info);
     void printLookupTable();
@@ -54,6 +61,8 @@ class Network {
     std::vector<int> client_command_fd_;
     std::vector<std::vector<int> > connected_routers_;
     std::vector<std::vector<int> > client_connected_routers_;
+    std::vector<std::vector<int> > groups_;
+    std::vector<std::string> group_ips_;
 
 };
 

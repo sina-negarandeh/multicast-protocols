@@ -58,7 +58,7 @@ int Client::readMessage(string link, char* message, size_t message_size, int rou
 
 int Client::requestConnect(int router_id, int port_number) {
     string link = "link_c_r_" + to_string(min(id_, router_id)) + "_" + to_string(max(id_, router_id));
-
+    link_ = to_string(min(id_, router_id)) + "_" + to_string(max(id_, router_id));
     string link_r = "r_" + link;
     string link_w = "w_" + link;
     
@@ -88,7 +88,7 @@ void Client::sendFile(std::string file_name, std::string server_name){
     vector<string> packet_strings = Packet(self_IP_.get_string(),  message, server_name).getPacketString();
     //TODO: this is wrong! change this!
     string link_string = "link_" + server_name + "_" + name_;
-    send(packet_strings[0], link_string);
+    send(packet_strings[0]);
 }
 
 void Client::sendMessage(std::string message, std::string server_name){
@@ -96,10 +96,12 @@ void Client::sendMessage(std::string message, std::string server_name){
     vector<string> packet_strings = Packet(self_IP_.get_string(),  message, server_name).getPacketString(); //??????
     //TODO: this is wrong! change this!
     string link_string = "link_" + server_name + "_" + name_;
-    send(packet_strings[0], link_string);
+    send(packet_strings[0]);
 }
 
-int Client::send(std::string message, std::string link){
+int Client::send(std::string message){
+    string temp =  "link_c_r_" + link_;
+    string link = "w_" + temp;
     int fd = open(link.c_str(), O_WRONLY);
 
     int write_bytes = write(fd, message.c_str(), strlen(message.c_str()) + 1);
