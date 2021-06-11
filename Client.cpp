@@ -115,3 +115,36 @@ int Client::send(std::string message){
     close(fd);
     return 0;
 }
+
+void Client::receive() {
+    fd_set readfds;
+    FD_ZERO(&readfds);
+
+    
+
+    std::string link_r = "link_c_r_" + link_;
+    
+    // cout << "System " << system_number_ << ": " << link << endl;
+
+    size_t message_size = 129;
+    char message[message_size];
+
+    // cout << "System " << system_number_ << ": Trying to open link to read." << endl;
+    int fd = open(link_r.c_str(), O_RDONLY|O_NONBLOCK);
+
+    FD_SET(fd, &readfds);
+
+    if (FD_ISSET(fd, &readfds)) {
+        
+        int read_bytes = read(fd, message, message_size);
+
+        if (read_bytes > 0) {
+
+                cout << "Cleint " << to_string(id_) << ": Message from Router " << message << endl;
+
+            memset(message, 0, message_size);
+        }
+    } else {
+        close(fd);
+    }
+}

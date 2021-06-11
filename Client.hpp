@@ -37,7 +37,7 @@ class Client{
     std::string getName(){ return name_; }
 
     int send(std::string message);
-    int recieve();
+    void receive();
 
     private:
     std::string name_;
