@@ -12,10 +12,12 @@
 #include "utils.hpp"
 #include "Client.hpp"
 #include "Packet.hpp"
+#include "Server.hpp"
 
 
 void routerProcess(Router this_router);
 void clientProcess(Client this_client);
+void serverProcess(Server this_server);
 
 class Network {
     public:
@@ -29,6 +31,10 @@ class Network {
     int findClient(int client_id);
     int connectClient(DeviceInfo device_info, std::string router_IP);
 
+    int server(std::vector<std::string> &splitted_command);
+    int getMainServer();
+    int connectServer(DeviceInfo device_info, std::string router_IP);
+
     int router(std::vector<std::string> &splitted_command);
     int findRouter(int router_id);
     int createNamePipe(std::string link);
@@ -39,8 +45,10 @@ class Network {
     void printLookupTable();
 
     private:
+    std::vector<Server> servers_;
     std::vector<Client> clients_;
     std::vector<Router> routers_;
+    int server_command_fd_;
     std::vector<int> router_command_fd_;
     std::vector<int> client_command_fd_;
     std::vector<std::vector<int> > connected_routers_;

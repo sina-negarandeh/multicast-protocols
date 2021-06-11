@@ -2,8 +2,8 @@ CC := g++ -std=c++17
 
 all : network
 
-network : main.o network.o router.o utils.o Packet.o Client.o
-		$(CC) main.o network.o router.o utils.o Packet.o Client.o -o network
+network : main.o network.o router.o utils.o Packet.o Client.o Server.o
+		$(CC) main.o network.o router.o utils.o Packet.o Client.o Server.o -o network
 
 main.o : main.cpp network.hpp router.hpp utils.hpp
 	$(CC) -c main.cpp
@@ -19,6 +19,9 @@ Packet.o : Packet.cpp Packet.hpp
 
 Client.o : Client.cpp Client.hpp
 	$(CC) -c Client.cpp
+
+Server.o : Server.cpp Server.hpp
+	$(CC) -c Server.cpp
 
 clean:
 	rm *.o network r_link_* w_link_*

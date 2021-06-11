@@ -15,10 +15,19 @@
 
 class Server{
     public:
-    Server(Ip server_IP);
+    Server(IP server_IP, IP router_IP, int router_port, int command_fd);
+    int getID(){ return id_; }
+    IP getIP(){ return server_IP_; }
+
+    void setCommandFd(int command_fd){ command_fd_ = command_fd; }
+    int getCommandFd(){ return command_fd_; }
 
     private:
-    Ip server_IP_;
+    int command_fd_;
+    IP server_IP_;
+    IP router_IP_;
+    int router_port_;
+    int id_=666;
 };
 
 

@@ -16,6 +16,7 @@
 
 #define ROUTER 0
 #define SYSTEM 1
+#define SERVER 2
 
 std::vector<std::string> splitCommand(std::string command, char delim=' ');
 std::string readFileIntoString(const std::string& path);

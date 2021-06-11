@@ -60,6 +60,9 @@ int Network::handleCommand(string command) {
         } else if (isCommandCorrect("Client", 6, command_keyword, splitted_command.size())) {
             this->client(splitted_command);
             return 0;
+        } else if (isCommandCorrect("Server", 4, command_keyword, splitted_command.size())) {
+            this->server(splitted_command);
+            return 0;
         } else {
             return 1;
         }
@@ -95,6 +98,67 @@ void clientProcess(Client this_client) {
             //this_client.connect();
         }
     }
+}
+
+int Network::server(std::vector<std::string> &splitted_command){
+    int fds[2];
+    if (pipe(fds) < 0) {
+        cout << "Network: Failed to create pipe." << endl;
+    }
+
+    int read_fd = fds[READ];
+    int write_fd = fds[WRITE];
+
+    IP server_IP(splitted_command[1]);
+    IP router_IP(splitted_command[2]);
+    int router_port = stoi(splitted_command[3]);
+    int server_id = 666;
+
+    servers_.push_back(Server(server_IP, router_IP, router_port, read_fd));
+
+    server_command_fd_ =  write_fd;
+
+    DeviceInfo device_info;
+    device_info.id_ = server_id;
+    device_info.IP_address_ = server_IP.get_string();
+    device_info.port_number_ = router_port;
+    device_info.type = SERVER;
+    connectServer(device_info, router_IP.get_string());
+    
+    int pid = fork();
+    if (pid == -1) {
+        cout<<"error: something's wrong, fork failed"<<endl;
+        exit(-1);
+    }else if (pid == 0) {
+        usleep(10000);
+        serverProcess(servers_[0]);
+        exit(-1);
+    }
+
+    string message = "Hello from Network!";
+
+    if (write(write_fd, message.c_str(), strlen(message.c_str()) + 1) < 0) {
+       cout << "Network: Faile to write to system " << routers_[routers_.size() - 1].getID() << " command file descriptor." << endl;
+    }
+
+    return 1;
+}
+
+int Network::getMainServer(){
+    return servers_[0].getID();
+}
+
+int Network::connectServer(DeviceInfo device_info, std::string router_IP){
+    for (int i = 0; i < routers_.size(); i++) {
+        if (routers_[i].getIP() == router_IP) {
+            this->updateLookupTable(i, device_info);
+        }
+    }
+}
+
+
+void serverProcess(Server this_server){
+    //TODO: complete
 }
 
 int Network::client(std::vector<std::string> &splitted_command) {
@@ -315,6 +379,9 @@ int Network::connectRouter(vector<string> &splitted_command) {
     this->updateLookupTable(fst_router_index, sec_device_info);
     this->updateLookupTable(sec_router_index, fst_device_info);
 
+    routers_[sec_router_index].updateLookupTable(routers_[fst_router_index].getLookupTable(), routers_[fst_router_index].getIP());
+    routers_[fst_router_index].updateLookupTable(routers_[sec_router_index].getLookupTable(), routers_[sec_router_index].getIP());
+
     // TODO: add link to network
 
     return 0;
@@ -326,12 +393,10 @@ int Network::updateLookupTable(int router_index, DeviceInfo device_info) {
         if (routers_[connected_routers_[router_index][i]].getID() == device_info.id_ && device_info.type == ROUTER)
             continue;
 
-        if (!routers_[connected_routers_[router_index][i]].hasInLookupTable(device_info))
-            if (device_info.type == SYSTEM) {
-                device_info.IP_address_ = routers_[router_index].getIP();
-                this->updateLookupTable(this->findRouter(connected_routers_[router_index][i]), device_info);
-            } else
-                this->updateLookupTable(this->findRouter(connected_routers_[router_index][i]), device_info);
+        if (!routers_[connected_routers_[router_index][i]].hasInLookupTable(device_info)){
+            device_info.IP_address_ = routers_[router_index].getIP();
+            this->updateLookupTable(this->findRouter(connected_routers_[router_index][i]), device_info);
+        }
     }
 }
 
