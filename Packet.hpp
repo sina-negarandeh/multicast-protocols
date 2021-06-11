@@ -6,7 +6,7 @@
 #include <vector>
 
 /*
-packet is a 128 character string
+packet is a 256 character string
             256
 ---------------------------
 -   32      192      32    -
