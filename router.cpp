@@ -131,11 +131,13 @@ void Router::printLookupTable() {
     for (int i = 0; i < this->lookup_table_.size(); i++) {
         cout << "---------------------" << endl;
         if (lookup_table_[i].type == ROUTER)
-            cout << "Router " << lookup_table_[i].id_ << " Port: " << lookup_table_[i].id_ << " IP: " << lookup_table_[i].IP_address_ << endl;
-        else
+            cout << "Router " << lookup_table_[i].id_ << " IP: " << lookup_table_[i].IP_address_ << endl;
+        else if (lookup_table_[i].type == SYSTEM)
             cout << "Client IP: " << lookup_table_[i].IP_address_ << endl;
+        else if (lookup_table_[i].type == SERVER)
+            cout << "Server IP: " << lookup_table_[i].IP_address_ << endl;
     }
-    cout << "---------------------" << endl;
+    cout << "---------------------\n" << endl;
 }
 
 std::vector<DeviceInfo> Router::getLookupTable() {
