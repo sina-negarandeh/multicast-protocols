@@ -37,6 +37,7 @@ class Network {
 
     int router(std::vector<std::string> &splitted_command);
     int findRouter(int router_id);
+    int findRouter(std::string router_IP);
     int createNamePipe(std::string link);
     int connectRouter(std::vector<std::string> &splitted_command);
     int send(std::string cmd);

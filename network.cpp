@@ -95,7 +95,7 @@ void clientProcess(Client this_client) {
         if (command_keyword == "connect") {
             int router_number = stoi(splitted_command[1]);
             int port_number = stoi(splitted_command[2]);
-            //this_client.connect();
+            this_client.requestConnect(router_number, port_number);
         }
     }
 }
@@ -205,7 +205,47 @@ int Network::client(std::vector<std::string> &splitted_command) {
     return 1;
 }
 
+int Network::findRouter(string router_IP) {
+    for (int i = 0; i < routers_.size(); i++) {
+        if (routers_[i].getIP() == router_IP) {
+            return i;
+        }
+        return -1;
+    }
+}
+
 int Network::connectClient(DeviceInfo device_info, string router_IP) {
+    int router_index = this->findRouter(router_IP);
+    int router_port = device_info.port_number_;
+    int client_id = device_info.id_;
+
+    int router_id = routers_[router_index].getID();
+
+    string link = "link_c_r_" + to_string(min(client_id, router_id)) + "_" + to_string(max(client_id, router_id));
+
+    if (createNamePipe("w_"+link) || createNamePipe("r_"+link)) {
+        return 1;
+    }
+
+    if (router_index == -1) {
+        cout << "Network: Router " << router_id << " is not available." << endl;
+        return 1;
+    }
+
+    string client_message = "connect " + to_string(router_id) + " " + to_string(router_port);
+    int client_write_fd = this->client_command_fd_[findClient(client_id)];
+
+    if (write(client_write_fd, client_message.c_str(), strlen(client_message.c_str()) + 1) < 0) {
+       cout << "Network: Failed to write to router " << router_id << " command file descriptor." << endl;
+    }
+
+    string router_message = "connect_router accept " + to_string(client_id) + " " + to_string(router_port) + " " + to_string(SYSTEM);
+    int sec_router_write_fd = this->router_command_fd_[router_index];
+
+    if (write(sec_router_write_fd, router_message.c_str(), strlen(router_message.c_str()) + 1) < 0) {
+       cout << "Network: Failed to write to client " << client_id << " command file descriptor." << endl;
+    }
+
     for (int i = 0; i < routers_.size(); i++) {
         if (routers_[i].getIP() == router_IP) {
             client_connected_routers_[i].push_back(device_info.id_);
@@ -236,11 +276,12 @@ void routerProcess(Router this_router) {
             string mode = splitted_command[1];
             int router_number = stoi(splitted_command[2]);
             int port_number = stoi(splitted_command[3]);
+            int device_type = stoi(splitted_command[4]);
 
             if (mode.compare("request") == 0) {
                 this_router.requestConnect(router_number, port_number);
             } else if (mode.compare("accept") == 0) {
-                this_router.acceptConnect(router_number, port_number);
+                this_router.acceptConnect(router_number, port_number, device_type);
             }
         }
     }
@@ -347,14 +388,14 @@ int Network::connectRouter(vector<string> &splitted_command) {
         return 1;
     }
 
-    string fst_router_message = "connect_router request " + to_string(sec_router_id) + " " + to_string(fst_port_number);
+    string fst_router_message = "connect_router request " + to_string(sec_router_id) + " " + to_string(fst_port_number) + " " + to_string(ROUTER);
     int fst_router_write_fd = this->router_command_fd_[fst_router_index];
 
     if (write(fst_router_write_fd, fst_router_message.c_str(), strlen(fst_router_message.c_str()) + 1) < 0) {
        cout << "Network: Failed to write to router " << fst_router_id << " command file descriptor." << endl;
     }
 
-    string sec_router_message = "connect_router accept " + to_string(fst_router_id) + " " + to_string(sec_port_number);
+    string sec_router_message = "connect_router accept " + to_string(fst_router_id) + " " + to_string(sec_port_number) + " " + to_string(ROUTER);
     int sec_router_write_fd = this->router_command_fd_[sec_router_index];
 
     if (write(sec_router_write_fd, sec_router_message.c_str(), strlen(sec_router_message.c_str()) + 1) < 0) {
