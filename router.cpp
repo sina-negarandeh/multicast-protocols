@@ -51,7 +51,8 @@ int Router::readMessage(string link, char* message, size_t message_size, int rou
 
     int read_bytes = read(fd, message, message_size);
     if (read_bytes > 1) {
-        cout << "Router " << id_ << ": Message from Router " << router_id << ": " << message << endl;
+        string message_ =  Packet(message).getMessage();
+        cout << "Router " << id_ << ": Message from Router " << router_id << ": " << message_ << endl;
         memset(message, 0, message_size);
         close(fd);
         return 1;
