@@ -99,6 +99,8 @@ void Network::sendClient(std::vector<std::string> &splitted_command){
     int client_id = stoi(splitted_command[1]); 
     int client_index = findClient(client_id);
     for (int member : group_members){
+        if (member == client_id)
+            continue;
         string client_message = "send " + to_string(member)  + message;
         int client_write_fd = this->client_command_fd_[findClient(client_id)];
         if (write(client_command_fd_[client_index], message.c_str(), strlen(message.c_str()) + 1) < 0) {
